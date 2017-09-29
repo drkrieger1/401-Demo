@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Lam15Demo.Models;
+using Lam15Demo.ViewModel;
 
 namespace Lam15Demo.Controllers
 {
@@ -19,8 +20,29 @@ namespace Lam15Demo.Controllers
         }
 
         // GET: Movies
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string movieGenre, string searchString)
         {
+            IQueryable<string> genreQuery = from m in _context.Movie
+                                            orderby m.Genre
+                                            select m.Genre;
+            var movies = from m in _context.Movie
+                         select m;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                movies = movies.Where(m => m.Title.Contains(searchString));
+            }
+
+            if (!String.IsNullOrEmpty(movieGenre))
+            {
+                movies = movies.Where(g => g.Genre == movieGenre);
+            }
+
+            var MovieGenreVm = new MovieGenreViewModel();
+
+            MovieGenreVm.genres = new SelectList(await genreQuery.Distinct().ToListAsync());
+            MovieGenreVm.movies = await movies.ToListAsync(); 
+
             return View(await _context.Movie.ToListAsync());
         }
 

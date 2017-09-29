@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Lam15Demo.Models.Movie>
+﻿@model Lam15Demo.Models.Movie
 
 @{
     ViewData["Title"] = "Index";
@@ -9,6 +9,14 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
+<form asp-controller="Movies" asp-action="index" method="get">
+    <p>
+        <select asp-for="movieGenre" asp-itmes="Model.Genres">
+            <option value="">ALL</option>
+        </select>
+    </p>
+</form>
 <table class="table">
     <thead>
         <tr>
@@ -28,7 +36,7 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model.movies) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Title)
